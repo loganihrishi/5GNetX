@@ -21,15 +21,38 @@ headers = {
 # TODO: complete this one
 @app.route('/numberVerification', methods=['GET'])
 def number_verification():
+    # Ensure that parameters are valid
     phone_number = request.args.get('phoneNumber')
 
+    if not phone_number:
+        return jsonify({
+            "error": "Missing required parameter: phoneNumber"
+        }), 400
+
+    # Prepare the payload
     payload = {
         "phoneNumber": phone_number
     }
 
+    # Send the POST request to the external API
     response = requests.post(f"{BASE_URL}numberVerification/verify", headers=headers, json=payload)
 
-    return jsonify(response.json())
+    # Get the JSON response
+    final_response = response.json()
+
+    # Check the status from the response
+    if final_response["status"] != 200:
+        return jsonify({
+            "error": final_response.get("message", "An error occurred"),
+            "code": final_response.get("code", "UNKNOWN_ERROR")
+        }), final_response["status"]
+
+    # Extract necessary fields from the response
+    device_phone_verified = final_response.get("devicePhoneNumberVerified", False)
+
+    return jsonify({
+        "phoneNumberVerified": device_phone_verified
+    }), 200
 
 
 @app.route('/isAuthorizedSwap', methods=['GET'])
