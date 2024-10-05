@@ -21,15 +21,40 @@ headers = {
 # TODO: complete this one
 @app.route('/numberVerification', methods=['GET'])
 def number_verification():
+    # Ensure that parameters are valid
     phone_number = request.args.get('phoneNumber')
 
+    if not phone_number:
+        return jsonify({
+            "error": "Missing required parameter: phoneNumber"
+        }), 400
+
+    # Prepare the payload
     payload = {
         "phoneNumber": phone_number
     }
 
+    # Send the POST request to the external API
     response = requests.post(f"{BASE_URL}numberVerification/verify", headers=headers, json=payload)
 
-    return jsonify(response.json())
+    # Get the JSON response
+    final_response = response.json()
+
+    # Check the status from the response
+    if final_response["status"] != 200:
+        return jsonify({
+            "error": final_response.get("message", "An error occurred"),
+            "code": final_response.get("code", "UNKNOWN_ERROR")
+        }), final_response["status"]
+
+    # Extract necessary fields from the response
+    device_phone_verified = final_response.get("devicePhoneNumberVerified", False)
+
+    return jsonify({
+        "phoneNumberVerified": device_phone_verified,
+        "status": 200,
+        "message": "Request successful."
+    }), 200
 
 
 @app.route('/isAuthorizedSwap', methods=['GET'])
@@ -88,9 +113,8 @@ def sim_swap():
 @app.route('/locationVerification', methods=['GET'])
 def location_verification():
     phone_number = request.args.get('phoneNumber')
-    latitude = request.args.get('latitude')
-    longitude = request.args.get('longitude')
-    accuracy = request.args.get('accuracy')
+    latitude = request.args.get('latitude')  # these are the coordinates of the card machine
+    longitude = request.args.get('longitude')  # these are the coordinates of the card machine
 
     payload = {
         "device": {
@@ -100,15 +124,25 @@ def location_verification():
             "type": "Circle",
             "location": {
                 "latitude": latitude,
-                "longitude": longitude
+                "longitude": longitude,
+                "radius": 30 # adjust this, this assumes it is within 30 meters
             },
-            "accuracy": accuracy
+            "accuracy": 50
         }
     }
 
     response = requests.post(f"{BASE_URL}location-verification/verify", headers=headers, json=payload)
+    response_data = response.json()
+    in_radius = False
+    if str(response_data.get("verificationResult")) == "true":
+        in_radius = True
 
-    return jsonify(response.json())
+    result = {
+        "status": response.status_code,
+        "withinRadius": in_radius
+    }
+    return jsonify(result), response.status_code
+
 
 
 if __name__ == '__main__':
