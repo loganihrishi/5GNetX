@@ -18,7 +18,6 @@ headers = {
     'Content-Type': 'application/json'
 }
 
-
 # TODO: complete this one
 @app.route('/numberVerification', methods=['GET'])
 def number_verification():
@@ -85,16 +84,13 @@ def sim_swap():
         "message": "Request successful."
     }), 200
 
-
+#TODO: complete this one
 @app.route('/locationVerification', methods=['GET'])
-
-"""
-returns True if the phone number is within the 30 metres of the specified coordinates
-"""
 def location_verification():
     phone_number = request.args.get('phoneNumber')
-    latitude = request.args.get('latitude')  # these are the coordinates of the card machine
-    longitude = request.args.get('longitude')  # these are the coordinates of the card machine
+    latitude = request.args.get('latitude')
+    longitude = request.args.get('longitude')
+    accuracy = request.args.get('accuracy')
 
     payload = {
         "device": {
@@ -104,24 +100,16 @@ def location_verification():
             "type": "Circle",
             "location": {
                 "latitude": latitude,
-                "longitude": longitude,
-                "radius": 30 # adjust this, this assumes it is within 30 meters
+                "longitude": longitude
             },
-            "accuracy": 50
+            "accuracy": accuracy
         }
     }
 
     response = requests.post(f"{BASE_URL}location-verification/verify", headers=headers, json=payload)
-    response_data = response.json()
-    in_radius = False
-    if str(response_data.get("verificationResult")) == "true":
-        in_radius = True
 
-    result = {
-        "status": response.status_code,
-        "withinRadius": in_radius
-    }
-    return jsonify(result), response.status_code
+    return jsonify(response.json())
+
 
 if __name__ == '__main__':
     app.run(debug=True)
