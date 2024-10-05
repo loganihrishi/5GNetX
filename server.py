@@ -18,7 +18,6 @@ headers = {
     'Content-Type': 'application/json'
 }
 
-# TODO: complete this one
 @app.route('/numberVerification', methods=['GET'])
 def number_verification():
     # Ensure that parameters are valid
@@ -51,7 +50,9 @@ def number_verification():
     device_phone_verified = final_response.get("devicePhoneNumberVerified", False)
 
     return jsonify({
-        "phoneNumberVerified": device_phone_verified
+        "phoneNumberVerified": device_phone_verified,
+        "status": 200,
+        "message": "Request successful."
     }), 200
 
 
