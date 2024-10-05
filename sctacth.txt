@@ -1,0 +1,19 @@
+curl -X POST "https://pplx.azurewebsites.net/api/rapid/v0/location-verification/verify" \
+        -H "Authorization: Bearer 819b3d" \
+        -H "Cache-Control: no-cache" \
+        -H "accept: application/json" \
+        -H "Content-Type: application/json" \
+        -d '{
+          "device": {
+            "phoneNumber": "14372293302"
+          },
+          "area": {
+            "type": "Circle",
+            "location": {
+              "latitude": "50.735851",
+              "longitude": "7.10066",
+              "radius" :
+            },
+            "accuracy": "50"
+         }
+        }
