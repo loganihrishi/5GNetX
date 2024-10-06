@@ -1,0 +1,6 @@
+Make client data to show sample api calls
+
+Case 1: The phone number is within the radius of specified coordinates
+
+Case 2: The phone number is outside the radius of the specified
+

@@ -133,16 +133,13 @@ def location_verification():
 
     response = requests.post(f"{BASE_URL}location-verification/verify", headers=headers, json=payload)
     response_data = response.json()
-    in_radius = False
-    if str(response_data.get("verificationResult")) == "true":
-        in_radius = True
+    in_radius = response_data.get("verificationResult")
 
     result = {
         "status": response.status_code,
         "withinRadius": in_radius
     }
     return jsonify(result), response.status_code
-
 
 
 if __name__ == '__main__':
