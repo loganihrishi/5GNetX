@@ -125,9 +125,8 @@ def location_verification():
             "location": {
                 "latitude": latitude,
                 "longitude": longitude,
-                "radius": 30 # adjust this, this assumes it is within 30 meters
             },
-            "accuracy": 50
+            "accuracy": "50"
         }
     }
 
@@ -143,4 +142,4 @@ def location_verification():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=8000, debug=True)
